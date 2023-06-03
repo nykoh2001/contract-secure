@@ -8,6 +8,7 @@ from solcx import (
     install_solc_pragma,
 )
 from solcx.exceptions import SolcNotInstalled
+from solcx.install import get_executable
 
 
 def parse_file(file):
@@ -23,7 +24,8 @@ logger = logging.getLogger()
 
 def main():
     arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument("file", type=argparse.FileType("rb"), action="store")
+    arg_parser.add_argument(
+        "file", type=argparse.FileType("rb"), action="store")
     arg_parser.add_argument("-t", dest="target-file", action="store")
     args = arg_parser.parse_args()
     file = args.file
@@ -35,14 +37,19 @@ def main():
     try:
         set_solc_version_pragma(parsed_file_version)
     except SolcNotInstalled:
-        logger.info(f"Installing solc version {parsed_file_version}...")
+        logger.info(f"solc version {parsed_file_version}...")
         install_solc_pragma(parsed_file_version)
         set_solc_version_pragma(parsed_file_version)
-        logger.info("Installed")
 
     contracts = compile_files([filename])
     logger.info(f"compiled {filename}")
-    print("contracts:", contracts)
+    for name, c in contracts.items():
+        bin_runtime = c['bin-runtime']
+        byte_code[name] = bin_runtime.encode('utf-8')
+    print("byte code:", byte_code)
+
+    for name, byte in byte_code.items():
+        logger.info(f"Analyzing {name}")
 
 
 if __name__ == "__main__":
