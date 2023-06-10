@@ -6,6 +6,8 @@ from solcx import (
 from parse_version import parse_version
 from solcx.install import get_executable
 
+from disassembler.disassem import EVMDisassemble
+
 
 logger = logging.getLogger()
 
@@ -37,6 +39,10 @@ def main():
 
     for name, byte in byte_code.items():
         logger.info(f"Analyzing {name}")
+        print("evm disassembled: ")
+        for r in EVMDisassemble.disassem_evm(byte):
+            print(r.name, r.opcode, r.operand)
+        # disassemble evm bytecode
 
 
 if __name__ == "__main__":
