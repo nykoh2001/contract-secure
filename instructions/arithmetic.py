@@ -3,9 +3,9 @@ import logging
 
 from z3 import simplify, URem, BitVecVal, SRem, BitVec, UDiv, LShR
 
-from rattle import SSAInstruction
+from rattle.analyze import SSAInstruction
 from environment.state import State
-from sym_exec.utils import get_argument_value, is_all_concrete, CEILING_256_VALUE, WORD_SIZE, to_signed, \
+from instructions.check_concrete_val import get_argument_value, is_all_concrete, CEILING_256_VALUE, WORD_SIZE, to_signed, \
     to_unsigned, is_concrete, is_symbolic
 
 logger = logging.getLogger(__name__)

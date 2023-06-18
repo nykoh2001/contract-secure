@@ -1,8 +1,8 @@
 import logging
 
-from rattle import ConditionalInternalCall, InternalCall, SSAInstruction
-from sym_exec.state import State
-from sym_exec.utils import get_argument_value, is_concrete
+from rattle.analyze import ConditionalInternalCall, InternalCall, SSAInstruction
+from environment.state import State
+from instructions.check_concrete_val import get_argument_value, is_concrete
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +11,8 @@ def inst_condicall(instruction: ConditionalInternalCall, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 1:
-        logger.error(f"CONDICALL instruction needs 1 arguments but {args_len} was given")
+        logger.error(
+            f"CONDICALL instruction needs 1 arguments but {args_len} was given")
         raise Exception
 
     target = instruction.target
@@ -19,7 +20,8 @@ def inst_condicall(instruction: ConditionalInternalCall, state: State):
 
     jump_to = target.blockmap.get(target.offset, None)
     if jump_to is None:
-        logger.warning("Could not find the offset to jump in CONDICALL instruction")
+        logger.warning(
+            "Could not find the offset to jump in CONDICALL instruction")
         return
 
     fallthrough_block = instruction.parent_block.fallthrough_edge
@@ -41,7 +43,8 @@ def inst_icall(instruction: InternalCall, state):
     try:
         possible_jumpi = pb.insns[-2]
         if possible_jumpi.insn.name == 'JUMPI':
-            condition = get_argument_value(possible_jumpi.arguments, 1, state.registers) == 0
+            condition = get_argument_value(
+                possible_jumpi.arguments, 1, state.registers) == 0
     except IndexError:
         pass
     target = instruction.target
@@ -54,7 +57,8 @@ def inst_phi(instruction: SSAInstruction, state: State):
     args.sort(key=lambda stack_value: stack_value.value, reverse=True)
     args_len = len(args)
     if args_len == 0:
-        logger.error(f"PHI instruction need arguments but {args_len} was given")
+        logger.error(
+            f"PHI instruction need arguments but {args_len} was given")
         raise Exception
 
     rv = instruction.return_value
@@ -73,7 +77,8 @@ def inst_phi(instruction: SSAInstruction, state: State):
             break
 
     if val is None:
-        logger.warning("Could not found any value for PHI instruction arguments")
+        logger.warning(
+            "Could not found any value for PHI instruction arguments")
         return
 
     registers.set(rv, val)

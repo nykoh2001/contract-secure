@@ -3,9 +3,9 @@ import logging
 
 from z3 import BitVec
 
-from rattle import SSAInstruction
-from sym_exec.state import State
-from sym_exec.utils import get_argument_value, WORD_SIZE, is_symbolic, is_concrete
+from rattle.analyze import SSAInstruction
+from environment.state import State
+from instructions.check_concrete_val import get_argument_value, WORD_SIZE, is_symbolic, is_concrete
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +13,8 @@ logger = logging.getLogger(__name__)
 def inst_create(instruction: SSAInstruction, state: State):
     args_len = len(instruction.arguments)
     if args_len != 3:
-        logger.error(f"CREATE instruction needs 3 arguments but {args_len} was given")
+        logger.error(
+            f"CREATE instruction needs 3 arguments but {args_len} was given")
         raise Exception
 
     rv = instruction.return_value
@@ -28,7 +29,8 @@ def inst_create(instruction: SSAInstruction, state: State):
 def __call(ret_offset, ret_length, instruction: SSAInstruction, state: State):
     rv = instruction.return_value.value
     if is_symbolic(ret_offset) or is_symbolic(ret_length):
-        logger.warning("RET_OFFSET or RET_LENGTH is symbolic in CREATE, CALLCODE or DELEGATECALL instruction")
+        logger.warning(
+            "RET_OFFSET or RET_LENGTH is symbolic in CREATE, CALLCODE or DELEGATECALL instruction")
     else:
         mem = state.memory
         mem.extend(ret_offset, ret_length)
@@ -43,7 +45,8 @@ def inst_call(instruction: SSAInstruction, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 7:
-        logger.error(f"CALL instruction needs 7 arguments but {args_len} was given")
+        logger.error(
+            f"CALL instruction needs 7 arguments but {args_len} was given")
         raise Exception
 
     rv = instruction.return_value
@@ -52,7 +55,8 @@ def inst_call(instruction: SSAInstruction, state: State):
         raise Exception
 
     registers = state.registers
-    ret_offset, ret_length = get_argument_value(args, 5, registers), get_argument_value(args, 6, registers)
+    ret_offset, ret_length = get_argument_value(
+        args, 5, registers), get_argument_value(args, 6, registers)
 
     __call(ret_offset, ret_length, instruction, state)
 
@@ -61,7 +65,8 @@ def inst_callcode(instruction: SSAInstruction, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 7:
-        logger.error(f"CALLCODE instruction needs 7 arguments but {args_len} was given")
+        logger.error(
+            f"CALLCODE instruction needs 7 arguments but {args_len} was given")
         raise Exception
 
     rv = instruction.return_value
@@ -70,7 +75,8 @@ def inst_callcode(instruction: SSAInstruction, state: State):
         raise Exception
 
     registers = state.registers
-    ret_offset, ret_length = get_argument_value(args, 5, registers), get_argument_value(args, 6, registers)
+    ret_offset, ret_length = get_argument_value(
+        args, 5, registers), get_argument_value(args, 6, registers)
 
     __call(ret_offset, ret_length, instruction, state)
 
@@ -79,11 +85,13 @@ def inst_return(instruction: SSAInstruction, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 2:
-        logger.error(f"RETURN instruction needs 2 argument but {args_len} was given")
+        logger.error(
+            f"RETURN instruction needs 2 argument but {args_len} was given")
         raise Exception
 
     registers = state.registers
-    offset, length = get_argument_value(args, 0, registers), get_argument_value(args, 1, registers)
+    offset, length = get_argument_value(
+        args, 0, registers), get_argument_value(args, 1, registers)
 
     if is_symbolic(length):
         logger.warning("RETURN instruction has symbolic length")
@@ -102,7 +110,8 @@ def inst_delegatecall(instruction: SSAInstruction, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 6:
-        logger.error(f"DELEGATECALL instruction needs 6 arguments but {args_len} was given")
+        logger.error(
+            f"DELEGATECALL instruction needs 6 arguments but {args_len} was given")
         raise Exception
 
     rv = instruction.return_value
@@ -111,7 +120,8 @@ def inst_delegatecall(instruction: SSAInstruction, state: State):
         raise Exception
 
     registers = state.registers
-    ret_offset, ret_length = get_argument_value(args, 4, registers), get_argument_value(args, 5, registers)
+    ret_offset, ret_length = get_argument_value(
+        args, 4, registers), get_argument_value(args, 5, registers)
 
     __call(ret_offset, ret_length, instruction, state)
 
@@ -120,7 +130,8 @@ def inst_delegatecall(instruction: SSAInstruction, state: State):
 def inst_create2(instruction: SSAInstruction, state: State):
     args_len = len(instruction.arguments)
     if args_len != 4:
-        logger.error(f"CREATE2 instruction needs 4 arguments but {args_len} was given")
+        logger.error(
+            f"CREATE2 instruction needs 4 arguments but {args_len} was given")
         raise Exception
 
     rv = instruction.return_value
@@ -136,7 +147,8 @@ def inst_staticcall(instruction: SSAInstruction, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 6:
-        logger.error(f"STATICCALL instruction needs 6 arguments but {args_len} was given")
+        logger.error(
+            f"STATICCALL instruction needs 6 arguments but {args_len} was given")
         raise Exception
 
     rv = instruction.return_value
@@ -145,7 +157,8 @@ def inst_staticcall(instruction: SSAInstruction, state: State):
         raise Exception
 
     registers = state.registers
-    ret_offset, ret_length = get_argument_value(args, 4, registers), get_argument_value(args, 5, registers)
+    ret_offset, ret_length = get_argument_value(
+        args, 4, registers), get_argument_value(args, 5, registers)
 
     __call(ret_offset, ret_length, instruction, state)
 
@@ -154,11 +167,13 @@ def inst_revert(instruction: SSAInstruction, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 2:
-        logger.error(f"REVERT instruction needs 2 arguments but {args_len} was given")
+        logger.error(
+            f"REVERT instruction needs 2 arguments but {args_len} was given")
         raise Exception
 
     registers = state.registers
-    offset, length = get_argument_value(args, 0, registers), get_argument_value(args, 1, registers)
+    offset, length = get_argument_value(
+        args, 0, registers), get_argument_value(args, 1, registers)
 
     state.reverted = True
 
@@ -182,7 +197,8 @@ def inst_invalid(instruction: SSAInstruction, state: State):
 def inst_selfdestruct(instruction: SSAInstruction, state: State):
     args_len = len(instruction.arguments)
     if args_len != 1:
-        logger.error(f"SELFDESTRUCT instruction needs 1 arguments but {args_len} was given")
+        logger.error(
+            f"SELFDESTRUCT instruction needs 1 arguments but {args_len} was given")
         raise Exception
 
     state.destructed = True

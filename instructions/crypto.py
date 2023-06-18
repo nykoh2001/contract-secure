@@ -4,9 +4,9 @@ import logging
 from Crypto.Hash import keccak
 from z3 import BitVec, simplify
 
-from rattle import SSAInstruction
-from sym_exec.state import State
-from sym_exec.utils import get_argument_value, is_all_concrete, WORD_SIZE, is_symbolic
+from rattle.analyze import SSAInstruction
+from environment.state import State
+from instructions.check_concrete_val import get_argument_value, is_all_concrete, WORD_SIZE, is_symbolic
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,8 @@ def inst_sha3(instruction: SSAInstruction, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 2:
-        logger.error(f"SHA3 instruction needs 2 arguments but {args_len} was given")
+        logger.error(
+            f"SHA3 instruction needs 2 arguments but {args_len} was given")
         raise Exception
 
     rv = instruction.return_value
@@ -26,7 +27,8 @@ def inst_sha3(instruction: SSAInstruction, state: State):
         raise Exception
 
     registers = state.registers
-    offset, length = get_argument_value(args, 0, registers), get_argument_value(args, 1, registers)
+    offset, length = get_argument_value(
+        args, 0, registers), get_argument_value(args, 1, registers)
 
     rv = rv.value
     if is_all_concrete(offset, length):

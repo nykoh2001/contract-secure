@@ -3,9 +3,9 @@ import logging
 
 from z3 import BitVec
 
-from rattle import SSAInstruction
-from sym_exec.state import State
-from sym_exec.utils import get_argument_value, is_all_concrete, WORD_SIZE, is_symbolic
+from rattle.analyze import SSAInstruction
+from environment.state import State
+from instructions.check_concrete_val import get_argument_value, is_all_concrete, WORD_SIZE, is_symbolic
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,8 @@ def inst_address(instruction: SSAInstruction, state: State):
 def inst_balance(instruction: SSAInstruction, state: State):
     args_len = len(instruction.arguments)
     if args_len != 1:
-        logger.error(f"BALANCE instruction needs 1 arguments but {args_len} was given")
+        logger.error(
+            f"BALANCE instruction needs 1 arguments but {args_len} was given")
         raise Exception
 
     rv = instruction.return_value
@@ -85,7 +86,8 @@ def inst_calldataload(instruction: SSAInstruction, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 1:
-        logger.error(f"CALLDATALOAD instruction needs 1 arguments but {args_len} was given")
+        logger.error(
+            f"CALLDATALOAD instruction needs 1 arguments but {args_len} was given")
         raise Exception
 
     rv = instruction.return_value
@@ -120,11 +122,13 @@ def inst_calldatacopy(instruction: SSAInstruction, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 3:
-        logger.error(f"CALLDATACOPY instruction needs 3 arguments but {args_len} was given")
+        logger.error(
+            f"CALLDATACOPY instruction needs 3 arguments but {args_len} was given")
         raise Exception
 
     registers = state.registers
-    dest_offset, length = get_argument_value(args, 0, registers), get_argument_value(args, 2, registers)
+    dest_offset, length = get_argument_value(
+        args, 0, registers), get_argument_value(args, 2, registers)
 
     if not is_all_concrete(dest_offset, length):
         logger.warning("CALLDATACOPY needs concrete values")
@@ -151,12 +155,13 @@ def inst_codecopy(instruction: SSAInstruction, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 3:
-        logger.error(f"CODECOPY instruction needs 3 arguments but {args_len} was given")
+        logger.error(
+            f"CODECOPY instruction needs 3 arguments but {args_len} was given")
         raise Exception
 
     registers = state.registers
     dest_offset, offset, length = get_argument_value(args, 0, registers), get_argument_value(args, 1, registers), \
-                                  get_argument_value(args, 2, registers)
+        get_argument_value(args, 2, registers)
 
     if is_symbolic(dest_offset):
         logger.warning("Symbolic memory index in CODECOPY instruction")
@@ -171,7 +176,8 @@ def inst_codecopy(instruction: SSAInstruction, state: State):
 
     if is_symbolic(offset):
         mem.extend(dest_offset, length)
-        mem.store(dest_offset, BitVec(str(hash(instruction)), length * 8), length)
+        mem.store(dest_offset, BitVec(
+            str(hash(instruction)), length * 8), length)
         return
 
     mem.extend(dest_offset, length)
@@ -199,7 +205,8 @@ def inst_gasprice(instruction: SSAInstruction, state: State):
 def inst_extcodesize(instruction: SSAInstruction, state: State):
     args_len = len(instruction.arguments)
     if args_len != 1:
-        logger.error(f"EXTCODESIZE instruction needs 1 arguments but {args_len} was given")
+        logger.error(
+            f"EXTCODESIZE instruction needs 1 arguments but {args_len} was given")
         raise Exception
 
     rv = instruction.return_value
@@ -216,11 +223,13 @@ def inst_extcodecopy(instruction: SSAInstruction, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 4:
-        logger.error(f"EXTCODECOPY instruction needs 4 arguments but {args_len} was given")
+        logger.error(
+            f"EXTCODECOPY instruction needs 4 arguments but {args_len} was given")
         raise Exception
 
     registers = state.registers
-    dest_offset, length = get_argument_value(args, 1, registers), get_argument_value(args, 3, registers)
+    dest_offset, length = get_argument_value(
+        args, 1, registers), get_argument_value(args, 3, registers)
 
     if is_symbolic(dest_offset):
         logger.warning("Symbolic memory index in EXTCODECOPY instruction")
@@ -252,11 +261,13 @@ def inst_returndatacopy(instruction: SSAInstruction, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 3:
-        logger.error(f"RETURNDATACOPY instruction needs 3 arguments but {args_len} was given")
+        logger.error(
+            f"RETURNDATACOPY instruction needs 3 arguments but {args_len} was given")
         raise Exception
 
     registers = state.registers
-    dest_offset, length = get_argument_value(args, 0, registers), get_argument_value(args, 2, registers)
+    dest_offset, length = get_argument_value(
+        args, 0, registers), get_argument_value(args, 2, registers)
 
     if is_symbolic(dest_offset):
         logger.warning("Symbolic memory index in RETURNDATACOPY instruction")
@@ -276,7 +287,8 @@ def inst_returndatacopy(instruction: SSAInstruction, state: State):
 def inst_extcodehash(instruction: SSAInstruction, state: State):
     args_len = len(instruction.arguments)
     if args_len != 1:
-        logger.error(f"EXTCODEHASH instruction needs 1 arguments but {args_len} was given")
+        logger.error(
+            f"EXTCODEHASH instruction needs 1 arguments but {args_len} was given")
         raise Exception
 
     rv = instruction.return_value

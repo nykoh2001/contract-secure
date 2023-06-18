@@ -3,9 +3,9 @@ import logging
 
 from z3 import BitVec
 
-from rattle import SSAInstruction
-from sym_exec.state import State
-from sym_exec.utils import get_argument_value, is_symbolic, WORD_SIZE
+from rattle.analyze import SSAInstruction
+from environment.state import State
+from instructions.check_concrete_val import get_argument_value, is_symbolic, WORD_SIZE
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,8 @@ def inst_blockhash(instruction: SSAInstruction, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 1:
-        logger.error(f"BLOCKHASH instruction needs 1 arguments but {args_len} was given")
+        logger.error(
+            f"BLOCKHASH instruction needs 1 arguments but {args_len} was given")
         raise Exception
 
     rv = instruction.return_value

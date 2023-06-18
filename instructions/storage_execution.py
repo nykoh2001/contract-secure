@@ -3,9 +3,9 @@ import logging
 
 from z3 import BitVec
 
-from rattle import SSAInstruction
-from sym_exec.state import State
-from sym_exec.utils import get_argument_value, is_concrete, WORD_SIZE, is_symbolic
+from rattle.analyze import SSAInstruction
+from environment.state import State
+from instructions.check_concrete_val import get_argument_value, is_concrete, WORD_SIZE, is_symbolic
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,8 @@ def inst_mload(instruction: SSAInstruction, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 1:
-        logger.error(f"MLOAD instruction needs 1 argument but {args_len} was given")
+        logger.error(
+            f"MLOAD instruction needs 1 argument but {args_len} was given")
         raise Exception
 
     rv = instruction.return_value
@@ -37,11 +38,13 @@ def inst_mstore(instruction: SSAInstruction, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 2:
-        logger.error(f"MSTORE instruction needs 2 argument but {args_len} was given")
+        logger.error(
+            f"MSTORE instruction needs 2 argument but {args_len} was given")
         raise Exception
 
     registers = state.registers
-    offset, value = get_argument_value(args, 0, registers), get_argument_value(args, 1, registers)
+    offset, value = get_argument_value(
+        args, 0, registers), get_argument_value(args, 1, registers)
 
     mem = state.memory
     if is_concrete(offset):
@@ -54,11 +57,13 @@ def inst_mstore8(instruction: SSAInstruction, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 2:
-        logger.error(f"MSTORE8 instruction needs 2 argument but {args_len} was given")
+        logger.error(
+            f"MSTORE8 instruction needs 2 argument but {args_len} was given")
         raise Exception
 
     registers = state.registers
-    offset, value = get_argument_value(args, 0, registers), get_argument_value(args, 1, registers)
+    offset, value = get_argument_value(
+        args, 0, registers), get_argument_value(args, 1, registers)
 
     mem = state.memory
     if is_concrete(offset):
@@ -71,7 +76,8 @@ def inst_sload(instruction: SSAInstruction, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 1:
-        logger.error(f"SLOAD instruction needs 1 argument but {args_len} was given")
+        logger.error(
+            f"SLOAD instruction needs 1 argument but {args_len} was given")
         raise Exception
 
     rv = instruction.return_value
@@ -100,11 +106,13 @@ def inst_sstore(instruction: SSAInstruction, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 2:
-        logger.error(f"SSTORE instruction needs 2 argument but {args_len} was given")
+        logger.error(
+            f"SSTORE instruction needs 2 argument but {args_len} was given")
         raise Exception
 
     registers = state.registers
-    key, value = get_argument_value(args, 0, registers), get_argument_value(args, 1, registers)
+    key, value = get_argument_value(
+        args, 0, registers), get_argument_value(args, 1, registers)
 
     state.storage.set(key, value)
 
@@ -137,7 +145,8 @@ def inst_jump(instruction: SSAInstruction, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 1:
-        logger.error(f"JUMP instruction needs 1 argument but {args_len} was given")
+        logger.error(
+            f"JUMP instruction needs 1 argument but {args_len} was given")
         raise Exception
 
     registers = state.registers
@@ -150,7 +159,8 @@ def inst_jump(instruction: SSAInstruction, state: State):
     pb = instruction.parent_block
     fallthrough_block = __get_false_path_block(pb)
     if fallthrough_block is not None and fallthrough_block.offset == destination:
-        logger.warning("JUMP should not have fallthrough block. Something is wrong...")
+        logger.warning(
+            "JUMP should not have fallthrough block. Something is wrong...")
         return [(fallthrough_block, None)]
 
     possible_jump = __get_true_path_block(pb, destination)
@@ -162,11 +172,13 @@ def inst_jumpi(instruction: SSAInstruction, state: State):
     args = instruction.arguments
     args_len = len(args)
     if args_len != 2:
-        logger.error(f"JUMPI instruction needs 2 argument but {args_len} was given")
+        logger.error(
+            f"JUMPI instruction needs 2 argument but {args_len} was given")
         raise Exception
 
     registers = state.registers
-    destination, condition = get_argument_value(args, 0, registers), get_argument_value(args, 1, registers)
+    destination, condition = get_argument_value(
+        args, 0, registers), get_argument_value(args, 1, registers)
 
     if is_symbolic(destination):
         logger.warning("JUMPI needs destination to be concrete.")
