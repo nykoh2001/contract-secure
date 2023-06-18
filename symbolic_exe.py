@@ -45,33 +45,33 @@ class Symbolic(object):
 
     def tracing(self, traces):
         analyzed_traces = []
+        traces = [t for t in traces if t.block != None]
         print("traces:", traces)
         for t in traces:
-            while t.block is not None:
-                print("t.block:", t.block)
-                current_block = t.block
-                executed_block = self.execute_block(
-                    current_block, t.state)
-                print("executes block:", executed_block)
-                if executed_block[0] is None:
-                    del executed_block[0]
+            print("t.block:", t.block)
+            if t.block == None:
+                continue
+            current_block = t.block
+            executed_block = self.execute_block(
+                current_block, t.state)
+            executed_block = [e for e in executed_block if e != None]
+
+            print("executes block:", executed_block)
+            t.add_checked_block(CheckedBlock(current_block))
+            for b in executed_block[1:]:
+                if b == None:
                     continue
-                t.add_checked_block(CheckedBlock(current_block))
-                for b in executed_block[1:]:
-                    if b == None:
-                        continue
-                    print("b:", b)
-                    new_trace = copy(t)
-                    new_trace.block = b[0]
-                    print("b[0]:", b[0])
-                    try:
-                        b[1]
-                        pass
-                    except:
-                        print("No constraints")
-                        continue
-                    new_trace.current_contraint = b[1]
-                    analyzed_traces.append(new_trace)
-                t.block = executed_block[0][0]
-                t.current_constraint = executed_block[0][1]
+                print("b:", b)
+                new_trace = copy(t)
+                new_trace.block = b[0]
+                try:
+                    b[1]
+                    pass
+                except:
+                    print("No constraints")
+                    continue
+                new_trace.current_contraint = b[1]
+                analyzed_traces.append(new_trace)
+            t.block = executed_block[0][0]
+            # t.current_constraint = executed_block[0][1]
         return analyzed_traces
