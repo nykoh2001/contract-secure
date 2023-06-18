@@ -40,7 +40,6 @@ class Symbolic(object):
         blocks = []
         for inst in block.insns:
             executes_block = self.execute_instuction(inst, state)
-            print("executes block:", executes_block)
             blocks.append(executes_block)
         return blocks
 
@@ -49,13 +48,28 @@ class Symbolic(object):
         print("traces:", traces)
         for t in traces:
             while t.block is not None:
+                print("t.block:", t.block)
                 current_block = t.block
                 executed_block = self.execute_block(
                     current_block, t.state)
+                print("executes block:", executed_block)
+                if executed_block[0] is None:
+                    del executed_block[0]
+                    continue
                 t.add_checked_block(CheckedBlock(current_block))
                 for b in executed_block[1:]:
+                    if b == None:
+                        continue
+                    print("b:", b)
                     new_trace = copy(t)
                     new_trace.block = b[0]
+                    print("b[0]:", b[0])
+                    try:
+                        b[1]
+                        pass
+                    except:
+                        print("No constraints")
+                        continue
                     new_trace.current_contraint = b[1]
                     analyzed_traces.append(new_trace)
                 t.block = executed_block[0][0]
