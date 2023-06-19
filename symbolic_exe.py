@@ -18,7 +18,6 @@ class Symbolic(object):
     def run(self):
         traces = [self.initial_trace]
         while True:
-            print("traces:", traces[0].environment)
             analyzed_traces = self.tracing(traces)
             print("analyzed trace:", analyzed_traces)
             self.traces.extend(traces)
@@ -33,7 +32,6 @@ class Symbolic(object):
             func = instructions_functions["PUSH"]
         else:
             func = instructions_functions[str(inst.insn)]
-        print("func:", func)
         return func(inst, state)
 
     def execute_block(self, block, state):
@@ -61,14 +59,12 @@ class Symbolic(object):
             for b in executed_block[1:]:
                 if b == None:
                     continue
-                print("b:", b)
                 new_trace = copy(t)
                 new_trace.block = b[0]
                 try:
                     b[1]
                     pass
                 except:
-                    print("No constraints")
                     continue
                 new_trace.current_contraint = b[1]
                 analyzed_traces.append(new_trace)

@@ -13,6 +13,7 @@ from add_overflow import check_add_overflow
 
 
 def main():
+    # 커맨드 라인으로 입력 파일 받기
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument(
         "file", type=argparse.FileType("rb"), action="store")
@@ -23,8 +24,10 @@ def main():
 
     byte_code = {}
 
+    # 파싱 및 솔리디티 컴파일러 설치
     parse_version(file)
 
+    # 입력파일 컴파일
     contracts = compile_files([filename])
 
     for name, c in contracts.items():
@@ -43,7 +46,6 @@ def main():
         recover = Recover(byte, edges=[], optimize=True)
         sym = Symbolic(recover)
         traces = sym.run()
-        print("traces:", traces)
         for trace in traces:
             for block in trace.blocks_checked:
                 for inst in block.block.insns:
@@ -51,9 +53,9 @@ def main():
                     # registers = block.state.registers
                     args = inst.arguments
                     print("instruction name:", inst_name)
-                    if inst_name == "ADD":
-                        print("check integer overflow...")
-                        check_add_overflow(inst, block.block)
+                    # if inst_name == "ADD":
+                    #     print("check integer overflow...")
+                    #     check_add_overflow(inst, block.block)
 
 
 if __name__ == "__main__":

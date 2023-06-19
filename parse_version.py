@@ -6,10 +6,11 @@ from solcx.exceptions import SolcNotInstalled
 
 def parse_file(file):
     parsed_file = parse(file.read().decode("utf-8"))
+    # 입력 파일 파싱 결과
     for children in parsed_file["children"]:
         if children["type"] == "PragmaDirective":
             return children["value"]
-    return get_available_solc_versions()[0]
+    # return get_available_solc_versions()[0]
 
 
 def parse_version(file):
